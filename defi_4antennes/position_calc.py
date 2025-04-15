@@ -28,8 +28,8 @@ alpha = 0.05
 """
 def position_calc(distances, e_coord, a_coord):
  
-    print(e_coord)
-    print(a_coord)
+    #print(e_coord)
+    #print(a_coord)
 
     ret_x = 0.0
     ret_y = 0.0
@@ -77,7 +77,7 @@ def position_calc(distances, e_coord, a_coord):
         print(str(data[j][0]) + "   " + str(data[j][1]) + "   " + str(data[j][2]))
     print("\n\n")
     """
-    print(str(np.array(distances) / 2) + "||(" + str(ret_x) + " ; " + str(ret_y) + ")||" + str(func_min))
+    #print(str(np.array(distances)) + "||(" + str(ret_x) + " ; " + str(ret_y) + ")||" + str(func_min))
     """
     ax_x = np.linspace(-3.2, 5, num = 25)
     ax_y = np.linspace(0, 5, num=25)

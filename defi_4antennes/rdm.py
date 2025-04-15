@@ -8,7 +8,6 @@ def result_write(positions_x, positions_y, speed_x, speed_y, check_tab):
     f = open("results.txt","w")
     f.write("Position_x Position_y Speed_x Speed_y check\n")
     for i in range(0,len(positions_x)):
-        print("SANS UNDERTALE")
         if(positions_x[i] < 0):
             f.write("-")
         else:
@@ -69,7 +68,7 @@ def main():
 
     for c in range(0, 4):
         for t in range(len(data['data'])):
-            e_des = np.array([data['data'][t][c+1] + 0j],dtype=complex)
+            e_des = np.array([data['data'][t][c] + 0j],dtype=complex)
             sig_t = e_des
             sig_t = np.delete(sig_t, del_index)
             signal[c][t] = sig_t
@@ -106,9 +105,9 @@ def main():
     try :
         f = open("calibration.txt","r")
         lines = f.readlines()
-        for i in range(0,3):
+        for i in range(0,4):
             range_values[i] += float(lines[i][4:18])
-            print(float(lines[i][4:18]))
+            print("a" + str(i) + " : " + str(float(lines[i][4:18])))
         f.close()
     except:
         pass
@@ -136,17 +135,17 @@ def main():
         
         test = rdm[1][frame][0:(len(rdm[1][frame]) // 2)]
         max_idx1 = np.unravel_index(np.argmax(np.abs(test)), test.shape)
-        r1[frame] = max(0,range_values[0][max_idx1[0]])
+        r1[frame] = max(0,range_values[1][max_idx1[0]])
         u1[frame] = velocity_values[max_idx1[1]]
 
         test = rdm[2][frame][0:(len(rdm[2][frame]) // 2)]
         max_idx2 = np.unravel_index(np.argmax(np.abs(test)), test.shape)
-        r2[frame] = max(0,range_values[1][max_idx2[0]])
+        r2[frame] = max(0,range_values[2][max_idx2[0]])
         u2[frame] = velocity_values[max_idx2[1]]
 
         test = rdm[3][frame][0:(len(rdm[3][frame]) // 2)]
         max_idx3 = np.unravel_index(np.argmax(np.abs(test)), test.shape)
-        r3[frame] = max(0,range_values[2][max_idx3[0]])
+        r3[frame] = max(0,range_values[3][max_idx3[0]])
         u3[frame] = velocity_values[max_idx3[1]]
 
     try:
@@ -166,19 +165,24 @@ def main():
     positions_x = np.array([positions[frame][0] for frame in range(0, n_frame)])
     positions_y = np.array([positions[frame][1] for frame in range(0, n_frame)])
     
-    speeds = np.array([vitesse_calc([positions_x[frame], positions_y[frame]], e_coord, a_coord, [u1[frame], u2[frame], u3[frame]]) for frame in range(0, n_frame)])
+    speeds = np.array([vitesse_calc([positions_x[frame], positions_y[frame]], e_coord, a_coord, [u0[frame], u1[frame], u2[frame], u3[frame]]) for frame in range(0, n_frame)])
     speeds_x = np.array([speeds[frame][0] for frame in range(0, n_frame)])
     speeds_y = np.array([speeds[frame][1] for frame in range(0, n_frame)])    
 
-    fig, ax = plt.subplots(1, 2)
+    check_tab = [True for frame in range(0,n_frame)]  
+
+    fig, ax = plt.subplots(1, 1)
     for frame in range(0, n_frame):
         if(abs(positions_x[frame]) > 3.8 or positions_y[frame] < 0 or positions_y[frame] > 15):
-            ax[0].plot(positions_x[frame], positions_y[frame], 'ro')
-            ax[0].quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='red')
+            ax.plot(positions_x[frame], positions_y[frame], 'ro')
+            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='red')
+            check_tab[frame] = False
         else:
-            ax[0].plot(positions_x[frame], positions_y[frame], 'go')
-            ax[0].quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='green') 
-    plt.save("fig.png")
+            ax.plot(positions_x[frame], positions_y[frame], 'go')
+            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='green') 
+
+    result_write(positions_x, positions_y, speeds_x, speeds_y, check_tab)
+    plt.savefig("result.png")
     plt.show()
     
 

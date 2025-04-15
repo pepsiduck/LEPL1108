@@ -172,18 +172,18 @@ def main():
 
     check_tab = [True for frame in range(0,n_frame)]  
 
-    fig, ax = plt.subplots(1, 2)
+    fig, ax = plt.subplots(1, 1)
     for frame in range(0, n_frame):
         if(abs(positions_x[frame]) > 3.8 or positions_y[frame] < 0 or positions_y[frame] > 15):
-            ax[0].plot(positions_x[frame], positions_y[frame], 'ro')
-            ax[0].quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='red')
+            ax.plot(positions_x[frame], positions_y[frame], 'ro')
+            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='red')
             check_tab[frame] = False
         else:
-            ax[0].plot(positions_x[frame], positions_y[frame], 'go')
-            ax[0].quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='green') 
+            ax.plot(positions_x[frame], positions_y[frame], 'go')
+            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='green') 
 
     result_write(positions_x, positions_y, speeds_x, speeds_y, check_tab)
-    
+    plt.savefig("result.png")
     plt.show()
     
 
