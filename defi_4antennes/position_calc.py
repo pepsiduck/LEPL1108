@@ -37,11 +37,11 @@ def position_calc(distances, e_coord, a_coord):
 
     #data = [None for j in range(0, 20)]
 
-    for j in range(0, 50):
+    for j in range(0, 100):
         x = random.uniform(-20.0, 20.0)
         y = random.uniform(-20.0, 20.0)
 
-        for c in range(0, 50):
+        for c in range(0, 100):
             grad_x = 0.0
             grad_y = 0.0
 

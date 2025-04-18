@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import math
 from position_calc import *
 
 def result_write(positions_x, positions_y, speed_x, speed_y, check_tab):
@@ -34,6 +35,33 @@ def result_write(positions_x, positions_y, speed_x, speed_y, check_tab):
             f.write("False")
         f.write("\n")
     f.close()
+
+dt = 0.144
+
+def check(positions_x, positions_y, speeds_x, speeds_y, n_frames):
+    check = [True for frame in range(0,n_frames)] 
+    check_counter = 1
+    for i in range(0,n_frames):
+        if(abs(positions_x[i]) > 2.8 or positions_y[i] < 0 or positions_y[i] > 15):
+            check[i] = False
+            check_counter += 1
+        elif(speeds_x[i] == 0.0 and speeds_y[i] == 0.0):
+            check[i] = True
+            check_counter += 1
+        elif (i - check_counter >= 0):
+            print(math.sqrt(speeds_x[i - check_counter]**2 + speeds_y[i - check_counter]**2) * dt * check_counter * 10)
+            distance_parcourue = 10e5#math.sqrt(speeds_x[i - check_counter]**2 + speeds_y[i - check_counter]**2) * dt * check_counter * 20 # tolérance de 10
+            distance_vraie = math.sqrt((positions_x[i] - positions_x[i - check_counter])**2 + (positions_y[i] - positions_y[i - check_counter])**2)
+            if(distance_vraie >= distance_parcourue):
+                check[i] = False
+                check_counter += 1
+            else:
+                check[i] = True
+                check_counter = 1
+        else:
+            check[i] = True
+            check_counter = 1    
+    return check
 
 def main():
     # arguments
@@ -169,17 +197,17 @@ def main():
     speeds_x = np.array([speeds[frame][0] for frame in range(0, n_frame)])
     speeds_y = np.array([speeds[frame][1] for frame in range(0, n_frame)])    
 
-    check_tab = [True for frame in range(0,n_frame)]  
+    check_tab = check(positions_x, positions_y, speeds_x, speeds_y, n_frame) 
 
     fig, ax = plt.subplots(1, 1)
+
     for frame in range(0, n_frame):
-        if(abs(positions_x[frame]) > 3.8 or positions_y[frame] < 0 or positions_y[frame] > 15):
-            ax.plot(positions_x[frame], positions_y[frame], 'ro')
-            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='red')
-            check_tab[frame] = False
-        else:
+        if(check_tab[frame]):
             ax.plot(positions_x[frame], positions_y[frame], 'go')
-            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='green') 
+            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='green')
+        else:
+            ax.plot(positions_x[frame], positions_y[frame], 'ro')
+            ax.quiver(positions_x[frame], positions_y[frame], speeds_x[frame], speeds_y[frame], color='red') 
 
     result_write(positions_x, positions_y, speeds_x, speeds_y, check_tab)
     plt.savefig("result.png")
